@@ -7,6 +7,7 @@ import java.awt.*;
  */
 public class Game extends JPanel {
 
+
     public Game() {
 
         JFrame frame = new JFrame("Gravy");
