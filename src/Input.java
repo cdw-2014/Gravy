@@ -4,7 +4,7 @@ import java.awt.event.KeyListener;
 /**
  * Created by Jared H on 5/12/2017.
  */
-public class Input extends KeyListener{
+public class Input implements KeyListener {
 
     boolean[] keys = new boolean[160];
 
