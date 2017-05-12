@@ -6,15 +6,23 @@ import java.awt.event.KeyListener;
  */
 public class Input implements KeyListener {
 
-    boolean[] keys = new boolean[160];
+    public boolean[] keys = new boolean[600];
+    public boolean[] keyTyped = new boolean[600];
 
-    public void keyTyped(KeyEvent e){}
+    public void keyTyped(KeyEvent e){
+
+    }
     public void keyPressed(KeyEvent e) {
-        keys[e.getKeyCode()] = true;
+        if (e.getKeyCode() < keys.length) {
+            keys[e.getKeyCode()] = true;
+        }
     }
 
 
     public void keyReleased(KeyEvent e) {
         keys[e.getKeyCode()] = false;
+
+        //FOR TOGGLING
+        keyTyped[e.getKeyCode()] = true;
     }
 }
