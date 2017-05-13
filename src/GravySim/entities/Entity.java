@@ -64,6 +64,7 @@ public abstract class Entity {
         x+=dx;
         y+=dy;
         calcScreenPos(x,y);
+        calcForce();
     }
 
     public Point calcScreenPos(double x, double y){
