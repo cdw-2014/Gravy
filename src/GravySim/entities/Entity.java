@@ -13,25 +13,24 @@ public abstract class Entity {
     Color color;
     Image img;
     int screenX, screenY, screenW, screenH;
-
     //120 ticks per second convert ds to per tick
     double mass, momentum, x, y, width, height, dx, dy;
 
     public Entity(Color color, double x, double y, double width, double height, double mass, double dx, double dy, Game game) {
         this.color = color;
-        this.x = x;
-        this.y = y;
+        this.x = x-width/2;
+        this.y = y-height/2;
         this.width = width;
         this.height = height;
         this.mass = mass;
         this.dx = dx;
         this.dy = dy;
         this.game = game;
-        System.out.print(game.getWidth());
-        screenX = (int)(x/500+game.getWidth()/2);
-        screenY = (int)(y/500+game.getHeight()/2);
-        screenW = (int)(width/500);
-        screenH = (int)(height/500);
+        calcScreenPos(x,y);
+        screenW = (int)(width/(500.0/game.getScl()));
+        screenH = (int)(height/(500.0/game.getScl()));
+
+        calculateMomentum();
 
     }
 
@@ -45,11 +44,45 @@ public abstract class Entity {
         this.dx = dx;
         this.dy = dy;
         this.game = game;
+        calcScreenPos(x,y);
+        screenW = (int)(width/(500.0/game.getScl()));
+        screenH = (int)(height/(500.0/game.getScl()));
+
     }
 
-    public void getMomentum(){
+    public void calculateMomentum(){
+        double vel =Math.sqrt(dx*dx+dy*dy);
+        momentum = mass*vel;
+    }
+
+    public double getMomentum(){
+        return momentum;
+    }
+
+    public void tick(){
+        x+=dx;
+        y+=dy;
 
     }
+
+    public Point calcScreenPos(double x, double y){
+        screenX = (int)((x-width/2)/(500.0/game.getScl())+game.getWidth()/2);
+        screenY = (int)((y-width/2)/(500.0/game.getScl())+game.getHeight()/2);
+        return new Point(screenX,screenY);
+    }
+
+    public static void calcForce(Entity a, Entity b){
+        long G = (long)6.6740831* (long)Math.pow(10,-11);
+        double force = G*a.mass*b.mass/calcDist(a,b);
+
+    }
+
+    public static double calcDist(Entity a, Entity b){
+        double x = Math.abs(a.x-b.x);
+        double y = Math.abs(a.y-b.y);
+        return Math.sqrt(x*x-y*y);
+    }
+
 
     public abstract void paint(Graphics g);
 }

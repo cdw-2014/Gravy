@@ -15,7 +15,8 @@ public class Star extends Entity {
     }
 
     public void paint(Graphics g) {
-
+        g.setColor(color);
+        g.fillOval(screenX,screenY,screenW,screenH);
     }
 
 }

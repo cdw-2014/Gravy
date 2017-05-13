@@ -2,6 +2,7 @@ package GravySim;
 
 import GravySim.entities.Entity;
 import GravySim.entities.Planet;
+import GravySim.entities.Star;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ public class Game extends JPanel {
 
     boolean running = false, fullscreen = false;
 
-    int frameRate = 0, scl = 10;
+    int frameRate = 0, scl = 5;
     Input input = new Input();
     JFrame frame;
 
@@ -40,7 +41,8 @@ public class Game extends JPanel {
     }
 
     public void init(){
-        ents.add(new Planet(Color.BLUE, 0,0,5000,5000, 500, 40,0, this));
+        ents.add(new Star(Color.YELLOW, 0, 0, 50000, 50000, 20000, 0,0, this));
+        ents.add(new Planet(Color.BLUE, 50000,0,5000,5000, 500, 40,0, this));
     }
 
     public void run(){
@@ -83,6 +85,9 @@ public class Game extends JPanel {
 
     public void tick() {
         checkInput();
+        for(Entity e: ents){
+            e.tick();
+        }
     }
 
     public void paint(Graphics g){
@@ -130,5 +135,9 @@ public class Game extends JPanel {
         Game game = new Game();
 
         game.run();
+    }
+
+    public int getScl() {
+        return scl;
     }
 }
