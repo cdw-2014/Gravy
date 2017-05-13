@@ -1,13 +1,16 @@
+import java.awt.*;
+
 /**
  * Created by weavechr000 on 5/12/2017.
  */
 public class Star extends Entity {
 
-    public Star() {
+    public Star(Image img, int x, int y, int width, int height) {
+        super(img, x, y, width, height);
+
     }
 
-    @Override
-    public void paint() {
+    public void paint(Graphics g) {
 
     }
 
