@@ -3,6 +3,7 @@ package GravySim.entities;
 import GravySim.Game;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Created by weavechr000 on 5/12/2017.
@@ -59,10 +60,10 @@ public abstract class Entity {
         return momentum;
     }
 
-    public void tick(){
+    public void tick(ArrayList<Entity> ents){
         x+=dx;
         y+=dy;
-
+        calcScreenPos(x,y);
     }
 
     public Point calcScreenPos(double x, double y){

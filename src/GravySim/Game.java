@@ -86,7 +86,7 @@ public class Game extends JPanel {
     public void tick() {
         checkInput();
         for(Entity e: ents){
-            e.tick();
+            e.tick(ents);
         }
     }
 
