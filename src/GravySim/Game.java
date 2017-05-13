@@ -1,7 +1,12 @@
+package GravySim;
+
+import GravySim.entities.Entity;
+import GravySim.entities.Planet;
+
 import javax.swing.*;
-import javax.tools.Tool;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 /**
  * Created by weavechr000 on 5/12/2017.
@@ -13,9 +18,11 @@ public class Game extends JPanel {
 
     boolean running = false, fullscreen = false;
 
-    int frameRate = 0;
+    int frameRate = 0, scl = 10;
     Input input = new Input();
     JFrame frame;
+
+    ArrayList<Entity> ents = new ArrayList<Entity>();
 
 
     public Game() {
@@ -24,14 +31,17 @@ public class Game extends JPanel {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setBackground(Color.BLACK);
-        frame.setSize(windowSize);
+        setPreferredSize(windowSize);
         frame.setLocationRelativeTo(this);
         frame.add(this);
         setVisible(true);
         frame.addKeyListener(input);
+        frame.pack();
     }
 
-    public void init(){}
+    public void init(){
+        ents.add(new Planet(Color.BLUE, 0,0,5000,5000, 500, 40,0, this));
+    }
 
     public void run(){
         init();
@@ -73,6 +83,13 @@ public class Game extends JPanel {
 
     public void tick() {
         checkInput();
+    }
+
+    public void paint(Graphics g){
+        super.paint(g);
+        for (Entity e: ents){
+            e.paint(g);
+        }
     }
 
     public void checkInput(){
