@@ -5,9 +5,8 @@ import java.awt.*;
  */
 public class Star extends Entity {
 
-    public Star(Image img, int x, int y, int width, int height) {
-        super(img, x, y, width, height);
-
+    public Star(Color color, double x, double y, int width, int height, double mass, double dx, double dy) {
+        super(color, x, y, width, height, mass, dx, dy);
     }
 
     public void paint(Graphics g) {

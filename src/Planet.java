@@ -5,10 +5,9 @@ import java.awt.*;
  */
 public class Planet extends Entity {
 
-    public Planet(Image img, int x, int y, int width, int height) {
-        super(img, x, y, width, height);
+    public Planet(Color color, double x, double y, int width, int height, double mass, double dx, double dy) {
+        super(color, x, y, width, height, mass, dx, dy);
     }
-
 
     public void paint(Graphics g) {
 
