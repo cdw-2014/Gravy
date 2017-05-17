@@ -40,8 +40,8 @@ public class Game extends JPanel {
     }
 
     public void init(){
-        ents.add(new Entity(Color.YELLOW, 0, 0, 50000, 50000, 20000, 0,0, this));
-        ents.add(new Entity(Color.BLUE, 50000,0,5000,5000, 500, 40,0, this));
+        ents.add(new Entity(Color.YELLOW, 0, 0, 4E3, 4E3, 2E16, 0,0, this));
+        ents.add(new Entity(Color.BLUE, 1E4,0,2E3,2E3, 2E7, -2,2, this));
     }
 
     public void run(){
@@ -84,7 +84,6 @@ public class Game extends JPanel {
 
     public void tick() {
         checkInput();
-        calcForces();
         for(Entity e: ents){
             e.tick();
         }
@@ -93,15 +92,6 @@ public class Game extends JPanel {
 
     }
 
-    public void calcForces(){
-        for(Entity ent1: ents){
-            for(Entity ent2: ents){
-                if (ent1 != ent2){
-                    ent1.addForce(Entity.calcForce(ent1,ent2));
-                }
-            }
-        }
-    }
 
     public void paint(Graphics g){
         super.paint(g);
@@ -152,5 +142,9 @@ public class Game extends JPanel {
 
     public int getScl() {
         return scl;
+    }
+
+    public ArrayList<Entity> getEnts() {
+        return ents;
     }
 }
