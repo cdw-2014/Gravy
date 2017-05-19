@@ -14,31 +14,33 @@ public class Entity {
     Color color;
     Image img;
     int screenX, screenY, screenW, screenH;
+
+    double posX,posY,dx,dy,dx2,d2y;
     //120 ticks per second convert ds to per tick
-    Point pos = new Point(0,0);
-    Point vel = new Point(0,0);
-    Point accel = new Point(0,0);
 
     double mass, momentum, width, height;
     ArrayList<Point> forces = new ArrayList<Point>();
+    ArrayList<Trail> trails = new ArrayList<>();
 
     public Entity(Color color, double x, double y, double width, double height, double mass, double dx, double dy, Game game) {
         this.color = color;
-        pos.setLocation(x,y);
+        this.posX = x;
+        this.posY = y;
         this.width = width;
         this.height = height;
         this.mass = mass;
-        vel.setLocation(dx,dy);
+        this.dx = dx;
+        this.dy = dy;
         this.game = game;
         calcScreenPos();
         screenW = (int)(width/(500.0/game.getScl()));
         screenH = (int)(height/(500.0/game.getScl()));
 
-        calculateMomentum();
+
 
     }
 
-    public Entity(Image img, double x, double y, int width, int height, double mass, double dx, double dy, Game game) {
+    /*public Entity(Image img, double x, double y, int width, int height, double mass, double dx, double dy, Game game) {
         this.img = img;
         pos.setLocation(x,y);
         this.width = width;
@@ -50,22 +52,24 @@ public class Entity {
         screenW = (int)(width/(500.0/game.getScl()));
         screenH = (int)(height/(500.0/game.getScl()));
 
-    }
+    }*/
 
-    public void calculateMomentum(){
-        momentum = mass* Point.distance(vel.getX(), 0,0,vel.getY());
-    }
+//    public void calculateMomentum(){
+//        momentum = mass* Point.distance(vel.getX(), 0,0,vel.getY());
+//    }
 
     public double getMomentum(){
         return momentum;
     }
 
     public void tick(){
-        pos.setLocation(pos.getX()+vel.getX(), pos.getY()+vel.getY());
-        vel.setLocation(vel.getX()+accel.getX(), vel.getY()+accel.getY());
+        posX+=dx;
+        posY+=dy;
+        dx+=dx2;
+        dy+=d2y;
         calcScreenPos();
         updateAccel();
-        System.out.println(accel.getX());
+        trails.add(new Trail(screenX+screenW/2, screenY+screenH/2, 2, Color.CYAN));
 
     }
 
@@ -76,18 +80,24 @@ public class Entity {
 
 
     public void calcScreenPos(){
-        screenX = (int)((pos.getX()-width/2)/(500.0/game.getScl())+game.getWidth()/2);
-        screenY = (int)((pos.getY()-width/2)/(500.0/game.getScl())+game.getHeight()/2);
+        screenX = (int)((posX-width/2)/(500.0/game.getScl())+game.getWidth()/2);
+        screenY = (int)((posY-width/2)/(500.0/game.getScl())+game.getWidth()/2);
     }
 
     public static Point calcForce(Entity a, Entity b){
         double G = 6.6740831E-11;
         double angle = calcAngle(a, b);
-        double force = G*a.mass*b.mass/Point.distance(a.pos.getX(),a.pos.getY(), b.pos.getX(), b.pos.getY());
+        double force = G*a.mass*b.mass/distance(a.posX, a.posY, b.posX, b.posY);
+//        double force = G*a.mass*b.mass/Point.distance(a.pos.getX(),a.pos.getY(), b.pos.getX(), b.pos.getY());
         Point forceComp = new Point();
         forceComp.setLocation(force*Math.cos(angle), force*Math.sin(angle));
-        System.out.println(force);
         return forceComp;
+    }
+
+    public static double distance(double ax, double ay, double bx, double by) {
+
+        return Math.sqrt(Math.pow(ax - bx, 2) + Math.pow(ay- by, 2));
+
     }
 
     public void updateAccel() {
@@ -96,17 +106,19 @@ public class Entity {
             if(this != e) forces.add(calcForce(this, e));
         double d2y = 0, d2x = 0;
         for(Point p : forces) {
-            p.setLocation(p.getX()/mass, p.getY()/mass);
-            d2y += p.getY();
-            d2x += p.getX();
+            d2y += p.getY()/mass;
+            d2x += p.getX()/mass;
         }
-        accel.setLocation(d2x, d2y);
+        System.out.println(d2x);
+        System.out.println(d2y);
+//        accel.setLocation(d2x,d2y);
+//        System.out.println(accel.getX() + ", " + accel.getY());
 
     }
 
 
     public static double calcAngle(Entity a, Entity b){
-        return Math.atan2(a.pos.getY()-b.pos.getY(), a.pos.getX()-b.pos.getX());
+        return Math.atan2(b.posY - a.posY, b.posX - a.posX);
     }
 
 
@@ -114,6 +126,9 @@ public class Entity {
     public void paint(Graphics g){
         g.setColor(color);
         g.fillOval(screenX,screenY,screenW,screenH);
+        for(Trail t : trails) {
+            t.paint(g);
+        }
 
     }
 }

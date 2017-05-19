@@ -41,7 +41,7 @@ public class Game extends JPanel {
 
     public void init(){
         ents.add(new Entity(Color.YELLOW, 0, 0, 4E3, 4E3, 2E16, 0,0, this));
-        ents.add(new Entity(Color.BLUE, 1E4,0,2E3,2E3, 2E7, -2,2, this));
+        ents.add(new Entity(Color.BLUE, 2E4,0,2E3,2E3, 2E9, -30,-190, this));
     }
 
     public void run(){
