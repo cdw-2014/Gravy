@@ -41,7 +41,7 @@ public class Game extends JPanel {
 
     public void init(){
         ents.add(new Entity(Color.YELLOW, 0, 0, 4E3, 4E3, 2E16, 0,0, this));
-        ents.add(new Entity(Color.BLUE, 2E4,0,2E3,2E3, 2E9, -30,-190, this));
+        ents.add(new Entity(Color.BLUE, 3.3E4,0,2E3,2E3, 1.75E9, 0,-4, this));
     }
 
     public void run(){
@@ -86,8 +86,8 @@ public class Game extends JPanel {
         checkInput();
         for(Entity e: ents){
             e.tick();
-        }
 
+        }
 
 
     }

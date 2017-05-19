@@ -10,19 +10,21 @@ import java.util.ArrayList;
  */
 public class Entity {
 
+    public static double SCALE_CONSTANT = 300;
+
     Game game;
     Color color;
     Image img;
     int screenX, screenY, screenW, screenH;
 
-    double posX,posY,dx,dy,dx2,d2y;
+    long posX,posY,dx,dy,dx2,d2y;
     //120 ticks per second convert ds to per tick
 
     double mass, momentum, width, height;
     ArrayList<Point> forces = new ArrayList<Point>();
     ArrayList<Trail> trails = new ArrayList<>();
 
-    public Entity(Color color, double x, double y, double width, double height, double mass, double dx, double dy, Game game) {
+    public Entity(Color color, long x, long y, double width, double height, double mass, long dx, long dy, Game game) {
         this.color = color;
         this.posX = x;
         this.posY = y;
@@ -33,8 +35,8 @@ public class Entity {
         this.dy = dy;
         this.game = game;
         calcScreenPos();
-        screenW = (int)(width/(500.0/game.getScl()));
-        screenH = (int)(height/(500.0/game.getScl()));
+        screenW = (int)(width/(SCALE_CONSTANT/game.getScl()));
+        screenH = (int)(height/(SCALE_CONSTANT/game.getScl()));
 
 
 
@@ -63,10 +65,10 @@ public class Entity {
     }
 
     public void tick(){
-        posX+=dx;
-        posY+=dy;
-        dx+=dx2;
-        dy+=d2y;
+        posX+=dx*10;
+        posY+=dy*10;
+        dx+=dx2*10;
+        dy+=d2y*10;
         calcScreenPos();
         updateAccel();
         trails.add(new Trail(screenX+screenW/2, screenY+screenH/2, 2, Color.CYAN));
@@ -80,14 +82,14 @@ public class Entity {
 
 
     public void calcScreenPos(){
-        screenX = (int)((posX-width/2)/(500.0/game.getScl())+game.getWidth()/2);
-        screenY = (int)((posY-width/2)/(500.0/game.getScl())+game.getWidth()/2);
+        screenX = (int)((posX-width/2)/(SCALE_CONSTANT/game.getScl())+game.getWidth()/2);
+        screenY = (int)((posY-height/2)/(SCALE_CONSTANT/game.getScl())+game.getHeight()/2);
     }
 
     public static Point calcForce(Entity a, Entity b){
         double G = 6.6740831E-11;
         double angle = calcAngle(a, b);
-        double force = G*a.mass*b.mass/distance(a.posX, a.posY, b.posX, b.posY);
+        double force = G*a.mass*b.mass/Math.pow(distance(a.posX+a.width/2, a.posY+a.height/2, b.posX+b.width/2, b.posY+b.height/2),2);
 //        double force = G*a.mass*b.mass/Point.distance(a.pos.getX(),a.pos.getY(), b.pos.getX(), b.pos.getY());
         Point forceComp = new Point();
         forceComp.setLocation(force*Math.cos(angle), force*Math.sin(angle));
@@ -104,15 +106,16 @@ public class Entity {
         ArrayList<Point> forces = new ArrayList<>();
         for(Entity e : game.getEnts())
             if(this != e) forces.add(calcForce(this, e));
-        double d2y = 0, d2x = 0;
+         d2y = 0;
+         dx2 = 0;
         for(Point p : forces) {
             d2y += p.getY()/mass;
-            d2x += p.getX()/mass;
+            dx2 += p.getX()/mass;
         }
-        System.out.println(d2x);
+        System.out.println(dx2);
         System.out.println(d2y);
-//        accel.setLocation(d2x,d2y);
-//        System.out.println(accel.getX() + ", " + accel.getY());
+
+
 
     }
 
