@@ -9,34 +9,34 @@ import java.util.ArrayList;
  * Created by weavechr000 on 5/12/2017.
  */
 public class Entity {
+    static double SCALE_CONSTANT = 3E5, G = 6.6740831E-11;
+    int TIME_CONSTANT = 5;
 
-    public static double SCALE_CONSTANT = 300;
 
     Game game;
     Color color;
     Image img;
     int screenX, screenY, screenW, screenH;
 
-    long posX,posY,dx,dy,dx2,d2y;
+    double posX,posY,dx,dy,dx2,d2y;
     //120 ticks per second convert ds to per tick
 
-    double mass, momentum, width, height;
-    ArrayList<Point> forces = new ArrayList<Point>();
+    double mass, momentum, rad;
     ArrayList<Trail> trails = new ArrayList<>();
 
-    public Entity(Color color, long x, long y, double width, double height, double mass, long dx, long dy, Game game) {
+    public Entity(Color color, double x, double y, double rad, double mass, long dx, double dy, Game game) {
         this.color = color;
         this.posX = x;
         this.posY = y;
-        this.width = width;
-        this.height = height;
+        this.rad = rad;
+
         this.mass = mass;
         this.dx = dx;
         this.dy = dy;
         this.game = game;
         calcScreenPos();
-        screenW = (int)(width/(SCALE_CONSTANT/game.getScl()));
-        screenH = (int)(height/(SCALE_CONSTANT/game.getScl()));
+        screenW = (int)(rad*2/game.getScl()/SCALE_CONSTANT);
+        screenH = (int)(rad*2/game.getScl()/SCALE_CONSTANT);
 
 
 
@@ -65,35 +65,28 @@ public class Entity {
     }
 
     public void tick(){
-        posX+=dx*10;
-        posY+=dy*10;
-        dx+=dx2*10;
-        dy+=d2y*10;
+        posX+=dx*TIME_CONSTANT;
+        posY+=dy*TIME_CONSTANT;
+        dx+=dx2*TIME_CONSTANT;
+        dy+=d2y*TIME_CONSTANT;
         calcScreenPos();
         updateAccel();
         trails.add(new Trail(screenX+screenW/2, screenY+screenH/2, 2, Color.CYAN));
 
     }
 
-    public void addForce(Point force){
-        forces.add(force);
-    }
-
 
 
     public void calcScreenPos(){
-        screenX = (int)((posX-width/2)/(SCALE_CONSTANT/game.getScl())+game.getWidth()/2);
-        screenY = (int)((posY-height/2)/(SCALE_CONSTANT/game.getScl())+game.getHeight()/2);
+        screenX = (int)((posX-rad)/game.getScl()/SCALE_CONSTANT + game.getWidth()/2);
+        screenY = (int)((posY-rad)/game.getScl()/SCALE_CONSTANT + game.getHeight()/2);
+
     }
 
-    public static Point calcForce(Entity a, Entity b){
-        double G = 6.6740831E-11;
-        double angle = calcAngle(a, b);
-        double force = G*a.mass*b.mass/Math.pow(distance(a.posX+a.width/2, a.posY+a.height/2, b.posX+b.width/2, b.posY+b.height/2),2);
-//        double force = G*a.mass*b.mass/Point.distance(a.pos.getX(),a.pos.getY(), b.pos.getX(), b.pos.getY());
-        Point forceComp = new Point();
-        forceComp.setLocation(force*Math.cos(angle), force*Math.sin(angle));
-        return forceComp;
+    public static double calcForce(Entity a, Entity b){
+
+        double force = G*a.mass*b.mass/Math.pow(distance(a.posX+a.rad, a.posY+a.rad, b.posX+b.rad, b.posY+b.rad),2);
+        return force;
     }
 
     public static double distance(double ax, double ay, double bx, double by) {
@@ -103,20 +96,27 @@ public class Entity {
     }
 
     public void updateAccel() {
-        ArrayList<Point> forces = new ArrayList<>();
-        for(Entity e : game.getEnts())
-            if(this != e) forces.add(calcForce(this, e));
-         d2y = 0;
-         dx2 = 0;
-        for(Point p : forces) {
-            d2y += p.getY()/mass;
-            dx2 += p.getX()/mass;
+    //    ArrayList<Double> xforces = new ArrayList<>();
+    //    ArrayList<Double> yforces = new ArrayList<>();
+        d2y = 0;
+        dx2 = 0;
+        for(Entity e : game.getEnts()) {
+            if (this != e) {
+                double angle = calcAngle(this, e);
+                double accel = G*e.mass/Math.pow(distance(posX+rad, posY+rad, e.posX+e.rad, e.posY+e.rad),2);
+                d2y+=accel*Math.sin(angle);
+                dx2+=accel*Math.cos(angle);
+                System.out.println(color + "  " + Math.cos(angle));
+            }
         }
-        System.out.println(dx2);
-        System.out.println(d2y);
 
 
-
+//        for(Double d : xforces) {
+//            dx2+=d/mass;
+//        }
+//        for(Double d : yforces) {
+//            d2y += d / mass;
+//        }
     }
 
 

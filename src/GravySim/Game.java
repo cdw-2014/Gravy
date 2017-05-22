@@ -18,7 +18,7 @@ public class Game extends JPanel {
 
     boolean running = false, fullscreen = false;
 
-    int frameRate = 0, scl = 5;
+    int frameRate = 0, scl = 4;
     Input input = new Input();
     JFrame frame;
 
@@ -35,13 +35,15 @@ public class Game extends JPanel {
         frame.setLocationRelativeTo(this);
         frame.add(this);
         setVisible(true);
+        frame.setResizable(false);
         frame.addKeyListener(input);
         frame.pack();
     }
 
     public void init(){
-        ents.add(new Entity(Color.YELLOW, 0, 0, 4E3, 4E3, 2E16, 0,0, this));
-        ents.add(new Entity(Color.BLUE, 3.3E4,0,2E3,2E3, 1.75E9, 0,-4, this));
+        ents.add(new Entity(Color.YELLOW, 0, 0, 695.7E6/5, 1.989E30/6, 0,0, this));
+        ents.add(new Entity(Color.BLUE, 1.496E9/2/Math.sqrt(2),0,6.371E6, 3.97E24, 0,0, this));
+        //ents.add(new Entity(Color.BLUE, 1.497E9/2/Math.sqrt(2),0,1, 3.97E30, 0,0, this));
     }
 
     public void run(){
@@ -121,7 +123,7 @@ public class Game extends JPanel {
         }
         else{
             frame.dispose();
-            frame.setResizable(true);
+            frame.setResizable(false);
             frame.setUndecorated(false);
             frame.setLocationRelativeTo(this);
             frame.setSize(windowSize);
