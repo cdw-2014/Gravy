@@ -83,15 +83,15 @@ public class Entity {
 
     }
 
-    public static double calcForce(Entity a, Entity b){
-
-        double force = G*a.mass*b.mass/Math.pow(distance(a.posX+a.rad, a.posY+a.rad, b.posX+b.rad, b.posY+b.rad),2);
-        return force;
-    }
+//    public static double calcForce(Entity a, Entity b){
+//
+//        double force = G*a.mass*b.mass/Math.pow(distance(a.posX+a.rad, a.posY+a.rad, b.posX+b.rad, b.posY+b.rad),2);
+//        return force;
+//    }
 
     public static double distance(double ax, double ay, double bx, double by) {
 
-        return Math.sqrt(Math.pow(ax - bx, 2) + Math.pow(ay- by, 2));
+        return Math.sqrt(Math.pow(bx-ax, 2) + Math.pow(by-ay, 2));
 
     }
 
@@ -103,10 +103,11 @@ public class Entity {
         for(Entity e : game.getEnts()) {
             if (this != e) {
                 double angle = calcAngle(this, e);
-                double accel = G*e.mass/Math.pow(distance(posX+rad, posY+rad, e.posX+e.rad, e.posY+e.rad),2);
+//                System.out.println(angle);
+                double accel = G*e.mass/Math.pow(distance(posX, posY, e.posX, e.posY),2);
                 d2y+=accel*Math.sin(angle);
                 dx2+=accel*Math.cos(angle);
-                System.out.println(color + "  " + Math.cos(angle));
+                System.out.println(color + "  " + accel*Math.cos(angle) + "   " + dx + "   " + screenX);
             }
         }
 
