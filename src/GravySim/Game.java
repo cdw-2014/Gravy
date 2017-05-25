@@ -5,13 +5,17 @@ import GravySim.entities.Entity;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by weavechr000 on 5/12/2017.
  */
-public class Game extends JPanel {
+public class Game extends JPanel implements ActionListener{
     public static Dimension windowSize = new Dimension((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()/10*9,
             (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight()/10*9);
 
@@ -21,8 +25,9 @@ public class Game extends JPanel {
     int frameRate = 0, scl = 4;
     Input input = new Input();
     JFrame frame;
+    Timer timer;
 
-    ArrayList<Entity> ents = new ArrayList<Entity>();
+    CopyOnWriteArrayList<Entity> ents = new CopyOnWriteArrayList<Entity>();
 
 
     public Game() {
@@ -41,9 +46,11 @@ public class Game extends JPanel {
     }
 
     public void init(){
-        ents.add(new Entity(Color.YELLOW, 0, 0, 695.7E6/5, 1.989E30/6, 0,0, this));
-        ents.add(new Entity(Color.BLUE, 1.496E9/2/Math.sqrt(2),0,6.371E6, 3.97E24, 0,0, this));
+        ents.add(new Entity(Color.YELLOW, 0, 0, 695.7E6/5, 1.989E30/6, 0,0, this, 0));
+        ents.add(new Entity(Color.BLUE, 1.496E9/2/Math.sqrt(2),0,2.371E7, 3.97E24, 0,-2.5E5, this, 1));
         //ents.add(new Entity(Color.BLUE, 1.497E9/2/Math.sqrt(2),0,1, 3.97E30, 0,0, this));
+        //timer = new Timer(1, this);
+        //timer.start();
     }
 
     public void run(){
@@ -63,15 +70,15 @@ public class Game extends JPanel {
             deltat += (now-lastTime) / ns;
             deltaf += (now-lastTime) / ns;
             lastTime = now;
-            while (deltat >= 1){ //120 ps
+            while (deltat >= .3){ //150 ps
                 tick();
-                deltat-=1;
+                deltat-=.3;
             }
 
-            while (deltaf >= 1) { //120 ps
+            while (deltaf >= 2.2) { //60 ps
                 repaint();
                 frames++;
-                deltaf-=1;
+                deltaf-=2.2;
             }
 
             if (System.currentTimeMillis() - time > 1000){
@@ -97,9 +104,11 @@ public class Game extends JPanel {
 
     public void paint(Graphics g){
         super.paint(g);
-        for (Entity e: ents){
-            e.paint(g);
+        for (int i = 0; i < ents.size(); i++){
+            Entity e = ents.get(i);
+            e.paint((i == 0) ? ents.get(1) : ents.get(0), g);
         }
+
     }
 
     public void checkInput(){
@@ -146,7 +155,15 @@ public class Game extends JPanel {
         return scl;
     }
 
-    public ArrayList<Entity> getEnts() {
+    public CopyOnWriteArrayList<Entity> getEnts() {
         return ents;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        tick();
+        repaint();
+
     }
 }

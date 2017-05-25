@@ -9,36 +9,36 @@ import java.util.ArrayList;
  * Created by weavechr000 on 5/12/2017.
  */
 public class Entity {
-    static double SCALE_CONSTANT = 3E5, G = 6.6740831E-11;
-    int TIME_CONSTANT = 5;
-
+    static double SCALE_CONSTANT = 6.14E5, G = 6.6740831E-11;
 
     Game game;
     Color color;
     Image img;
-    int screenX, screenY, screenW, screenH;
+    double screenX, screenY, screenW, screenH ,oldX, oldY, orgX, orgY;
 
     double posX,posY,dx,dy,dx2,d2y;
+    String accelEquation;
     //120 ticks per second convert ds to per tick
 
     double mass, momentum, rad;
     ArrayList<Trail> trails = new ArrayList<>();
 
-    public Entity(Color color, double x, double y, double rad, double mass, long dx, double dy, Game game) {
+    public Entity(Color color, double x, double y, double rad, double mass, double dx, double dy, Game game, int i) {
         this.color = color;
         this.posX = x;
         this.posY = y;
         this.rad = rad;
-
         this.mass = mass;
         this.dx = dx;
         this.dy = dy;
         this.game = game;
         calcScreenPos();
-        screenW = (int)(rad*2/game.getScl()/SCALE_CONSTANT);
-        screenH = (int)(rad*2/game.getScl()/SCALE_CONSTANT);
+        orgX = screenX;
+        orgY = screenY;
+        screenW = (rad*2/game.getScl()/SCALE_CONSTANT);
+        screenH = (rad*2/game.getScl()/SCALE_CONSTANT);
 
-
+        //accelEquation = "A(R) = " + G + " * " +
 
     }
 
@@ -65,21 +65,30 @@ public class Entity {
     }
 
     public void tick(){
-        posX+=dx*TIME_CONSTANT;
-        posY+=dy*TIME_CONSTANT;
-        dx+=dx2*TIME_CONSTANT;
-        dy+=d2y*TIME_CONSTANT;
+        posX+=dx;
+        posY+=dy;
+        dx+=dx2;
+        dy+=d2y;
         calcScreenPos();
         updateAccel();
-        trails.add(new Trail(screenX+screenW/2, screenY+screenH/2, 2, Color.CYAN));
 
+
+
+        if(Math.abs(distance(screenX, screenY, oldX, oldY)) > 5) {
+            trails.add(new Trail(screenX + screenW / 2, screenY + screenH / 2, 2, Color.CYAN));
+            oldX = screenX;
+            oldY = screenY;
+        }
+        if(trails.size() > 50 && distance(screenX, screenY, trails.get(0).getX(), trails.get(0).getY()) < 5){
+            trails.remove(0);
+        }
     }
 
 
 
     public void calcScreenPos(){
-        screenX = (int)((posX-rad)/game.getScl()/SCALE_CONSTANT + game.getWidth()/2);
-        screenY = (int)((posY-rad)/game.getScl()/SCALE_CONSTANT + game.getHeight()/2);
+        screenX = ((posX-rad)/game.getScl()/SCALE_CONSTANT + game.getWidth()/2);
+        screenY = ((posY-rad)/game.getScl()/SCALE_CONSTANT + game.getHeight()/2);
 
     }
 
@@ -103,11 +112,14 @@ public class Entity {
         for(Entity e : game.getEnts()) {
             if (this != e) {
                 double angle = calcAngle(this, e);
-//                System.out.println(angle);
-                double accel = G*e.mass/Math.pow(distance(posX, posY, e.posX, e.posY),2);
-                d2y+=accel*Math.sin(angle);
-                dx2+=accel*Math.cos(angle);
-                System.out.println(color + "  " + accel*Math.cos(angle) + "   " + dx + "   " + screenX);
+                double rad = distance(posX, posY, e.posX, e.posY);
+                if( rad > e.rad/2) {
+                    double accel = (G * e.mass / Math.pow(rad,2) * 100.0) / 100;
+                    //System.out.println(accel);
+                    d2y += accel * Math.sin(angle);
+                    dx2 += accel * Math.cos(angle);
+                    //System.out.println(color + "  " + accel * Math.cos(angle) + "   " + dx + "   " + screenX);
+                }
             }
         }
 
@@ -127,12 +139,28 @@ public class Entity {
 
 
 
-    public void paint(Graphics g){
+    public void paint(Entity other, Graphics g){
         g.setColor(color);
-        g.fillOval(screenX,screenY,screenW,screenH);
+        g.fillOval((int)screenX,(int)screenY,(int)screenW,(int)screenH);
         for(Trail t : trails) {
             t.paint(g);
         }
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Times New Roman", Font.BOLD, 24));
+        double rad = distance(posX, posY, other.posX, other.posY);
+        accelEquation = "A(" + rad + ") = " + G + " * " + other.mass + " / " + (rad * rad);
+        printSimpleString("Acceleration: " + accelEquation + " = " + Math.sqrt(d2y * d2y + dx2 * dx2), 0, game.getWidth()/10,
+                game.getHeight()/5 + (this.color == Color.BLUE) ? 100 : 0, g);
+
 
     }
+
+    private void printSimpleString(String s, int width, int XPos, int YPos, Graphics g2d) {
+
+        int stringLen = (int)g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
+        int start = width/2 - stringLen/2;
+        g2d.drawString(s,start + XPos, YPos);
+
+    }
+
 }
