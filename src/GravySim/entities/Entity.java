@@ -146,11 +146,12 @@ public class Entity {
             t.paint(g);
         }
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Times New Roman", Font.BOLD, 24));
+        g.setFont(new Font("Times New Roman", Font.BOLD, 16));
         double rad = distance(posX, posY, other.posX, other.posY);
-        accelEquation = "A(" + rad + ") = " + G + " * " + other.mass + " / " + (rad * rad);
-        printSimpleString("Acceleration: " + accelEquation + " = " + Math.sqrt(d2y * d2y + dx2 * dx2), 0, game.getWidth()/10,
-                game.getHeight()/5 + (this.color == Color.BLUE) ? 100 : 0, g);
+        accelEquation = "A(R) = " + String.format("%6.3e\n", G) + " * " + String.format("%6.3e\n", other.mass) + " / " + String.format("%6.3e\n", rad * rad);
+
+        g.drawString("Acceleration: " + accelEquation + " = " + String.format("%6.3e\n", Math.sqrt(d2y * d2y + dx2 * dx2)), 15,
+                game.getHeight() - g.getFontMetrics().getHeight()*4 + ((this.color == Color.BLUE) ? g.getFontMetrics().getHeight()*2 : 0));
 
 
     }
