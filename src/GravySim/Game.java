@@ -15,12 +15,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by weavechr000 on 5/12/2017.
  */
+
 public class Game extends JPanel implements ActionListener{
     public static Dimension windowSize = new Dimension((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()/10*9,
             (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight()/10*9);
 
 
-    boolean running = false, fullscreen = false;
+    public boolean running = false, fullscreen = false, equations = false;
 
     int frameRate = 0, scl = 4;
     Input input = new Input();
@@ -45,12 +46,16 @@ public class Game extends JPanel implements ActionListener{
         frame.pack();
     }
 
-    public void init(){
-        ents.add(new Entity(Color.YELLOW, 0, 0, 695.7E6/5, 1.989E30/6, 0,0, this, 0));
-        ents.add(new Entity(Color.BLUE, 1.496E9/2/Math.sqrt(2),0,2.371E7, 3.97E24, 0,-2.5E5, this, 1));
-        //ents.add(new Entity(Color.BLUE, 1.497E9/2/Math.sqrt(2),0,1, 3.97E30, 0,0, this));
-        //timer = new Timer(1, this);
-        //timer.start();
+    public void init(Entity a, Entity b){
+        ents.clear();
+        ents.add(a);
+        ents.add(b);
+        timer = new Timer(1000/120, this);
+        timer.start();
+    }
+    public void init() {
+        timer = new Timer(1000/120, this);
+        timer.start();
     }
 
     public void run(){
@@ -108,6 +113,13 @@ public class Game extends JPanel implements ActionListener{
             Entity e = ents.get(i);
             e.paint((i == 0) ? ents.get(1) : ents.get(0), g);
         }
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Times New Roman", Font.BOLD, 32));
+        if(ents.size() == 0) {
+            printSimpleString("F1 - Fullscreen", 0, getWidth()/2, getHeight()/2 - g.getFontMetrics().getHeight()*2, g);
+            printSimpleString("Space - Show Equations", 0, getWidth()/2, getHeight()/2, g);
+            printSimpleString("1 & 2 - Toggle Presets", 0, getWidth()/2, getHeight()/2 + g.getFontMetrics().getHeight()*2, g);
+        }
 
     }
 
@@ -115,6 +127,23 @@ public class Game extends JPanel implements ActionListener{
         if (input.keyTyped[KeyEvent.VK_F1]){
             fullScreen();
             input.keyTyped[KeyEvent.VK_F1] = false;
+        }
+        if (!equations && input.keyTyped[KeyEvent.VK_SPACE]) {
+            equations = true;
+            input.keyTyped[KeyEvent.VK_SPACE] = false;
+        }
+        else if (equations && input.keyTyped[KeyEvent.VK_SPACE]) {
+            equations = false;
+            input.keyTyped[KeyEvent.VK_SPACE] = false;
+        }
+        
+        if (input.keyTyped[KeyEvent.VK_1]) {
+            init(new Entity(Color.YELLOW, 0, 0, 695.7E6/5, 1.989E30/6, 0,0, this), new Entity(Color.BLUE, 1.096E9/2/Math.sqrt(2),0,2.371E7, 3.97E24, 0,-2E5, this));
+            input.keyTyped[KeyEvent.VK_1] = false;
+        }
+        else if (input.keyTyped[KeyEvent.VK_2]) {
+            init(new Entity(Color.YELLOW, 0, 0, 695.7E6/5, 1.989E30/6, 0,0, this), new Entity(Color.BLUE, 1.496E9/2/Math.sqrt(2),0,2.371E7, 3.97E24, 0,-2.5E5, this));
+            input.keyTyped[KeyEvent.VK_2] = false;
         }
     }
 
@@ -148,7 +177,7 @@ public class Game extends JPanel implements ActionListener{
 
         Game game = new Game();
 
-        game.run();
+        game.init();
     }
 
     public int getScl() {
@@ -164,6 +193,14 @@ public class Game extends JPanel implements ActionListener{
 
         tick();
         repaint();
+
+    }
+    
+    private void printSimpleString(String s, int width, int XPos, int YPos, Graphics g2d) {
+
+        int stringLen = (int)g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
+        int start = width/2 - stringLen/2;
+        g2d.drawString(s,start + XPos, YPos);
 
     }
 }
