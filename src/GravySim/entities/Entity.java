@@ -14,16 +14,15 @@ public class Entity {
     Game game;
     Color color;
     Image img;
-    double screenX, screenY, screenW, screenH ,oldX, oldY, orgX, orgY;
-
-    double posX,posY,dx,dy,dx2,d2y;
-    String accelEquation;
+    double screenX, screenY, screenW, screenH ,oldX, oldY, orgX, orgY, oldAngle = 0;
+    boolean fullOrbit = false;
+    double posX,posY,dx,dy,dx2,d2y, w,r;
     //120 ticks per second convert ds to per tick
 
     double mass, momentum, rad;
     ArrayList<Trail> trails = new ArrayList<>();
 
-    public Entity(Color color, double x, double y, double rad, double mass, double dx, double dy, Game game, int i) {
+    public Entity(Color color, double x, double y, double rad, double mass, double dx, double dy, Game game) {
         this.color = color;
         this.posX = x;
         this.posY = y;
@@ -69,19 +68,19 @@ public class Entity {
         posY+=dy;
         dx+=dx2;
         dy+=d2y;
+
         calcScreenPos();
         updateAccel();
-
-
-
+//        System.out.println("w= " + w + "\nr= " + r + "\n\n");
+        if(trails.size() > 50 && distance(screenX, screenY, orgX, orgY) < rad/(3*SCALE_CONSTANT)) fullOrbit = true;
+        
         if(Math.abs(distance(screenX, screenY, oldX, oldY)) > 5) {
             trails.add(new Trail(screenX + screenW / 2, screenY + screenH / 2, 2, Color.CYAN));
             oldX = screenX;
             oldY = screenY;
+            if(fullOrbit) trails.remove(0);
         }
-        if(trails.size() > 50 && distance(screenX, screenY, trails.get(0).getX(), trails.get(0).getY()) < 5){
-            trails.remove(0);
-        }
+
     }
 
 
@@ -113,6 +112,9 @@ public class Entity {
             if (this != e) {
                 double angle = calcAngle(this, e);
                 double rad = distance(posX, posY, e.posX, e.posY);
+                r = rad;
+                w = (angle-oldAngle)/120;
+                oldAngle = angle;
                 if( rad > e.rad/2) {
                     double accel = (G * e.mass / Math.pow(rad,2) * 100.0) / 100;
                     //System.out.println(accel);
@@ -148,20 +150,46 @@ public class Entity {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Times New Roman", Font.BOLD, 16));
         double rad = distance(posX, posY, other.posX, other.posY);
-        accelEquation = "A(R) = " + String.format("%6.3e\n", G) + " * " + String.format("%6.3e\n", other.mass) + " / " + String.format("%6.3e\n", rad * rad);
+        
+        String accelEquation = "a(t) = -w^2(r cos(wt)i + r sin(wt)j)";
+        String velEquation = "v(t) = -rw sin(wt)i + rw cos(wt)j";
+        String posEquation = "r(t) = r cos(wt)i + r sin(wt)j";
+        
+        if(game.equations) {
+            if(color == Color.BLUE) {
+                g.drawString("Blue Mass:", 15, game.getHeight() - g.getFontMetrics().getHeight()*7);
 
-        g.drawString("Acceleration: " + accelEquation + " = " + String.format("%6.3e\n", Math.sqrt(d2y * d2y + dx2 * dx2)), 15,
-                game.getHeight() - g.getFontMetrics().getHeight()*4 + ((this.color == Color.BLUE) ? g.getFontMetrics().getHeight()*2 : 0));
+                g.drawString("Acceleration: " + accelEquation + " = " + String.format("%6.3e\n", Math.sqrt(d2y * d2y + dx2 * dx2)), 15,
+                    game.getHeight() - g.getFontMetrics().getHeight());
 
+                g.drawString("Velocity: " + velEquation + " = " + String.format("%6.3e\n", Math.sqrt(dy * dy + dx * dx)), 15,
+                    game.getHeight() - g.getFontMetrics().getHeight()*3);
+
+                g.drawString("Position: " + posEquation + " = " + String.format("%6.3e\n", r), 15,
+                    game.getHeight() - g.getFontMetrics().getHeight()*5);
+
+            } else {
+                g.drawString("Yellow Mass:", 15, g.getFontMetrics().getHeight());
+
+                g.drawString("Acceleration: " + accelEquation + " = " + String.format("%6.3e\n", Math.sqrt(d2y * d2y + dx2 * dx2)), 15,
+                    g.getFontMetrics().getHeight()*7);
+
+                g.drawString("Velocity: " + velEquation + " = " + String.format("%6.3e\n", Math.sqrt(dy * dy + dx * dx)), 15,
+                    g.getFontMetrics().getHeight()*5);
+
+                g.drawString("Position: " + posEquation + " = " + String.format("%6.3e\n", r), 15,
+                    g.getFontMetrics().getHeight()*3);
+            }
+        }
+        
+        
+        
+        
+        
+        
 
     }
 
-    private void printSimpleString(String s, int width, int XPos, int YPos, Graphics g2d) {
-
-        int stringLen = (int)g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
-        int start = width/2 - stringLen/2;
-        g2d.drawString(s,start + XPos, YPos);
-
-    }
+    
 
 }
