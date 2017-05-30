@@ -159,25 +159,25 @@ public class Entity {
             if(color == Color.BLUE) {
                 g.drawString("Blue Mass:", 15, game.getHeight() - g.getFontMetrics().getHeight()*7);
 
-                g.drawString("Acceleration: " + accelEquation + " = " + String.format("%6.3e\n", Math.sqrt(d2y * d2y + dx2 * dx2)), 15,
+                g.drawString("Acceleration: " + accelEquation + " = " + String.format("%6.3e\n", Math.sqrt(d2y * d2y + dx2 * dx2)) + " m/s^2", 15,
                     game.getHeight() - g.getFontMetrics().getHeight());
 
-                g.drawString("Velocity: " + velEquation + " = " + String.format("%6.3e\n", Math.sqrt(dy * dy + dx * dx)), 15,
+                g.drawString("Velocity: " + velEquation + " = " + String.format("%6.3e\n", Math.sqrt(dy * dy + dx * dx)) + " m/s", 15,
                     game.getHeight() - g.getFontMetrics().getHeight()*3);
 
-                g.drawString("Position: " + posEquation + " = " + String.format("%6.3e\n", r), 15,
+                g.drawString("Position: " + posEquation + " = " + String.format("%6.3e\n", r) + " m", 15,
                     game.getHeight() - g.getFontMetrics().getHeight()*5);
 
             } else {
                 g.drawString("Yellow Mass:", 15, g.getFontMetrics().getHeight());
 
-                g.drawString("Acceleration: " + accelEquation + " = " + String.format("%6.3e\n", Math.sqrt(d2y * d2y + dx2 * dx2)), 15,
+                g.drawString("Acceleration: " + accelEquation + " = " + String.format("%6.3e\n", Math.sqrt(d2y * d2y + dx2 * dx2)) + " m/s^2", 15,
                     g.getFontMetrics().getHeight()*7);
 
-                g.drawString("Velocity: " + velEquation + " = " + String.format("%6.3e\n", Math.sqrt(dy * dy + dx * dx)), 15,
+                g.drawString("Velocity: " + velEquation + " = " + String.format("%6.3e\n", Math.sqrt(dy * dy + dx * dx)) + " m/s", 15,
                     g.getFontMetrics().getHeight()*5);
 
-                g.drawString("Position: " + posEquation + " = " + String.format("%6.3e\n", r), 15,
+                g.drawString("Position: " + posEquation + " = " + String.format("%6.3e\n", r) + " m", 15,
                     g.getFontMetrics().getHeight()*3);
             }
         }
